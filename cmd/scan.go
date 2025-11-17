@@ -1,0 +1,38 @@
+package cmd
+
+import (
+	"fmt"
+	"os"
+
+	"github.com/spf13/cobra"
+	"github.com/vukan322/nuke-node_modules/internal/scanner"
+	"github.com/vukan322/nuke-node_modules/internal/ui"
+)
+
+var scanCmd = &cobra.Command{
+	Use:   "scan <path>",
+	Short: "Scan for node_modules directories (dry run)",
+	Args:  cobra.ExactArgs(1),
+	RunE:  runScan,
+}
+
+func init() {
+	rootCmd.AddCommand(scanCmd)
+}
+
+func runScan(cmd *cobra.Command, args []string) error {
+	path := args[0]
+
+	if _, err := os.Stat(path); os.IsNotExist(err) {
+		return fmt.Errorf("path does not exist: %s", path)
+	}
+
+	s := scanner.New(path, days, verbose, includeHidden)
+	results, err := s.Scan()
+	if err != nil {
+		return fmt.Errorf("scan failed: %w", err)
+	}
+
+	ui.PrintResults(results, false)
+	return nil
+}

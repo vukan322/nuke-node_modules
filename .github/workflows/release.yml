@@ -1,0 +1,65 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Get version from tag
+        id: get_version
+        run: echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+
+      - name: Build binaries
+        run: make release VERSION=${{ steps.get_version.outputs.VERSION }}
+
+      - name: Generate checksums
+        run: |
+          cd dist
+          sha256sum * > checksums.txt
+
+      - name: Create Release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: |
+            dist/nukenm-linux-amd64
+            dist/nukenm-darwin-amd64
+            dist/nukenm-darwin-arm64
+            dist/checksums.txt
+          body: |
+            **Linux:**
+            ```
+              curl -L https://github.com/vukan322/nuke-node_modules/releases/download/${{ steps.get_version.outputs.VERSION }}/nukenm-linux-amd64 -o nukenm
+              chmod +x nukenm
+              sudo mv nukenm /usr/local/bin/
+            ```
+
+            **macOS (Intel):**
+            ```
+              curl -L https://github.com/vukan322/nuke-node_modules/releases/download/${{ steps.get_version.outputs.VERSION }}/nukenm-darwin-amd64 -o nukenm
+              chmod +x nukenm
+              sudo mv nukenm /usr/local/bin/
+            ```
+
+            **macOS (Apple Silicon):**
+            ```
+              curl -L https://github.com/vukan322/nuke-node_modules/releases/download/${{ steps.get_version.outputs.VERSION }}/nukenm-darwin-arm64 -o nukenm
+              chmod +x nukenm
+              sudo mv nukenm /usr/local/bin/
+            ```
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

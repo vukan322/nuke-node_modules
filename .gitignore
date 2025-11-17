@@ -28,5 +28,12 @@ go.work.sum
 .env
 
 # Editor/IDE
-# .idea/
-# .vscode/
+.idea/
+.vscode/
+
+# Build
+/nukenm
+/dist/
+
+# Man files
+/docs/
