@@ -14,8 +14,17 @@ import (
 var scanCmd = &cobra.Command{
 	Use:   "scan <path>",
 	Short: "Scan for node_modules directories (dry run)",
-	Args:  cobra.ExactArgs(1),
-	RunE:  runScan,
+	Long: "Scan recursively searches for node_modules directories and shows\n" +
+		"what would be deleted without actually removing anything.\n\n" +
+		"Use this command first to preview what will be removed before running nuke.",
+	Example: "  # Scan your Documents folder\n" +
+		"  nukenm scan ~/Documents\n\n" +
+		"  # Scan with custom age filter (30 days)\n" +
+		"  nukenm scan ~/Projects --days 30\n\n" +
+		"  # Include hidden directories (dangerous!)\n" +
+		"  nukenm scan ~/ --days 0 --include-hidden",
+	Args: cobra.ExactArgs(1),
+	RunE: runScan,
 }
 
 func init() {

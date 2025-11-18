@@ -19,8 +19,17 @@ var yesFlag = false
 var nukeCmd = &cobra.Command{
 	Use:   "nuke <path>",
 	Short: "Delete node_modules directories",
-	Args:  cobra.ExactArgs(1),
-	RunE:  runNuke,
+	Long: "Nuke permanently deletes node_modules directories matching the criteria.\n\n" +
+		"This command scans first, shows what will be deleted, then asks for confirmation\n" +
+		"before proceeding (unless -y flag is used).",
+	Example: "  # Delete old node_modules with confirmation\n" +
+		"  nukenm nuke ~/Documents\n\n" +
+		"  # Skip confirmation prompt\n" +
+		"  nukenm nuke ~/Projects -y\n\n" +
+		"  # Aggressive cleanup (0 days old)\n" +
+		"  nukenm nuke ~/old-code --days 0 -y",
+	Args: cobra.ExactArgs(1),
+	RunE: runNuke,
 }
 
 func init() {
