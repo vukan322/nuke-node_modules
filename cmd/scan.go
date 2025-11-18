@@ -6,10 +6,13 @@ import (
 	"time"
 
 	"github.com/briandowns/spinner"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/vukan322/nuke-node_modules/internal/scanner"
 	"github.com/vukan322/nuke-node_modules/internal/ui"
 )
+
+var red = color.New(color.FgRed).SprintFunc()
 
 var scanCmd = &cobra.Command{
 	Use:   "scan <path>",
@@ -26,7 +29,7 @@ func runScan(cmd *cobra.Command, args []string) error {
 	path := args[0]
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return fmt.Errorf("path does not exist: %s", path)
+		return fmt.Errorf("%s: %s", red("Error"), err)
 	}
 
 	s := scanner.New(path, days, verbose, includeHidden)
@@ -44,7 +47,7 @@ func runScan(cmd *cobra.Command, args []string) error {
 	}
 
 	if err != nil {
-		return fmt.Errorf("scan failed: %w", err)
+		return fmt.Errorf("%s: %w", red("Scan failed"), err)
 	}
 
 	ui.PrintResults(results, false)

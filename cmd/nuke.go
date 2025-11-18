@@ -8,12 +8,17 @@ import (
 	"time"
 
 	"github.com/briandowns/spinner"
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/vukan322/nuke-node_modules/internal/scanner"
 	"github.com/vukan322/nuke-node_modules/internal/ui"
 )
 
-var yesFlag bool
+var (
+	yesFlag = false
+	redNuke = color.New(color.FgRed).SprintFunc()
+	yellow  = color.New(color.FgYellow).SprintFunc()
+)
 
 var nukeCmd = &cobra.Command{
 	Use:   "nuke <path>",
@@ -31,12 +36,12 @@ func runNuke(cmd *cobra.Command, args []string) error {
 	path := args[0]
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return fmt.Errorf("path does not exist: %s", path)
+		return fmt.Errorf("%s: %s", redNuke("Error"), err)
 	}
 
 	s := scanner.New(path, days, verbose, includeHidden)
 
-	sp := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
+	sp := spinner.New(spinner.CharSets[36], 100*time.Millisecond)
 	sp.Suffix = " Scanning for node_modules..."
 	if !verbose {
 		sp.Start()
@@ -49,11 +54,11 @@ func runNuke(cmd *cobra.Command, args []string) error {
 	}
 
 	if err != nil {
-		return fmt.Errorf("scan failed: %w", err)
+		return fmt.Errorf("%s: %w", redNuke("Scan failed"), err)
 	}
 
 	if len(results.Folders) == 0 {
-		fmt.Println("No node_modules folders found matching criteria")
+		fmt.Println(yellow("No node_modules folders found matching criteria"))
 		return nil
 	}
 
@@ -61,12 +66,12 @@ func runNuke(cmd *cobra.Command, args []string) error {
 
 	if !yesFlag {
 		if !confirmDeletion() {
-			fmt.Println("Operation cancelled")
+			fmt.Println(yellow("Operation cancelled"))
 			return nil
 		}
 	}
 
-	sp = spinner.New(spinner.CharSets[4], 100*time.Millisecond)
+	sp = spinner.New(spinner.CharSets[36], 100*time.Millisecond)
 	sp.Suffix = " Deleting..."
 	if !verbose {
 		sp.Start()
@@ -79,7 +84,7 @@ func runNuke(cmd *cobra.Command, args []string) error {
 	}
 
 	if err != nil {
-		return fmt.Errorf("deletion failed: %w", err)
+		return fmt.Errorf("%s: %w", redNuke("Deletion failed"), err)
 	}
 
 	ui.PrintResults(deleted, true)
