@@ -5,7 +5,6 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
-	"syscall"
 	"time"
 
 	"github.com/vukan322/nuke-node_modules/internal/util"
@@ -143,14 +142,6 @@ func (s *Scanner) Delete(result *ScanResult) (*ScanResult, error) {
 	}
 
 	return deleted, nil
-}
-
-func getDevice(info fs.FileInfo) uint64 {
-	stat, ok := info.Sys().(*syscall.Stat_t)
-	if !ok {
-		return 0
-	}
-	return uint64(stat.Dev)
 }
 
 func calculateSize(path string) int64 {

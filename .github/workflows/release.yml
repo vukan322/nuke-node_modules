@@ -39,6 +39,7 @@ jobs:
             dist/nukenm-linux-amd64
             dist/nukenm-darwin-amd64
             dist/nukenm-darwin-arm64
+            dist/nukenm-windows-amd64.exe
             dist/checksums.txt
           body: |
             **Linux:**
@@ -60,6 +61,14 @@ jobs:
               curl -L https://github.com/vukan322/nuke-node_modules/releases/download/${{ steps.get_version.outputs.VERSION }}/nukenm-darwin-arm64 -o nukenm
               chmod +x nukenm
               sudo mv nukenm /usr/local/bin/
+            ```
+            **Windows:**
+            ```
+              curl -L https://github.com/vukan322/nuke-node_modules/releases/download/${{ steps.get_version.outputs.VERSION }}/nukenm-windows-amd64.exe -o nukenm.exe
+            ```
+            Then run:
+            ```
+              .\nukenm.exe scan C:\Users\YourName\Documents
             ```
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

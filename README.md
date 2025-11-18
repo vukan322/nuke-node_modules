@@ -15,7 +15,7 @@ JavaScript projects accumulate `node_modules` folders that eat disk space. Backi
 - **Safe by default**: Skips hidden directories (`.nvm`, `.cache`, `.vscode`, etc.) to protect system tools
 - **Dry run first**: `scan` command shows what would be deleted before you commit
 - **Fast**: Skips symlinks, stays on same filesystem, uses approximate size calculation
-- **Cross-platform**: Works on Linux and macOS
+- **Cross-platform**: Works on Linux, macOS, and Windows
 
 ## Installation
 
@@ -41,6 +41,13 @@ curl -L https://github.com/vukan322/nuke-node_modules/releases/latest/download/n
 chmod +x nukenm
 sudo mv nukenm /usr/local/bin/
 ```
+
+**Windows:**
+```bash
+curl -L https://github.com/vukan322/nuke-node_modules/releases/latest/download/nukenm-windows-amd64.exe -o nukenm.exe
+```
+
+Then add to PATH or run directly: `.\nukenm.exe scan C:\Users\YourName\Documents`
 
 ## Usage
 

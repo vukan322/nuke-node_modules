@@ -37,4 +37,5 @@ release:
 	GOOS=linux GOARCH=amd64 go build -ldflags="-X 'github.com/vukan322/nuke-node_modules/cmd.version=$(VERSION)'" -o dist/$(BINARY_NAME)-linux-amd64
 	GOOS=darwin GOARCH=amd64 go build -ldflags="-X 'github.com/vukan322/nuke-node_modules/cmd.version=$(VERSION)'" -o dist/$(BINARY_NAME)-darwin-amd64
 	GOOS=darwin GOARCH=arm64 go build -ldflags="-X 'github.com/vukan322/nuke-node_modules/cmd.version=$(VERSION)'" -o dist/$(BINARY_NAME)-darwin-arm64
+	GOOS=windows GOARCH=amd64 go build -ldflags="-X 'github.com/vukan322/nuke-node_modules/cmd.version=$(VERSION)'" -o dist/$(BINARY_NAME)-windows-amd64.exe
 	@echo "Release binaries built in dist/"

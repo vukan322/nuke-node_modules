@@ -5,7 +5,9 @@ import (
 	"fmt"
 	"os"
 	"strings"
+	"time"
 
+	"github.com/briandowns/spinner"
 	"github.com/spf13/cobra"
 	"github.com/vukan322/nuke-node_modules/internal/scanner"
 	"github.com/vukan322/nuke-node_modules/internal/ui"
@@ -33,7 +35,19 @@ func runNuke(cmd *cobra.Command, args []string) error {
 	}
 
 	s := scanner.New(path, days, verbose, includeHidden)
+
+	sp := spinner.New(spinner.CharSets[4], 100*time.Millisecond)
+	sp.Suffix = " Scanning for node_modules..."
+	if !verbose {
+		sp.Start()
+	}
+
 	results, err := s.Scan()
+
+	if !verbose {
+		sp.Stop()
+	}
+
 	if err != nil {
 		return fmt.Errorf("scan failed: %w", err)
 	}
@@ -52,8 +66,18 @@ func runNuke(cmd *cobra.Command, args []string) error {
 		}
 	}
 
-	fmt.Println("\nDeleting...")
+	sp = spinner.New(spinner.CharSets[4], 100*time.Millisecond)
+	sp.Suffix = " Deleting..."
+	if !verbose {
+		sp.Start()
+	}
+
 	deleted, err := s.Delete(results)
+
+	if !verbose {
+		sp.Stop()
+	}
+
 	if err != nil {
 		return fmt.Errorf("deletion failed: %w", err)
 	}
