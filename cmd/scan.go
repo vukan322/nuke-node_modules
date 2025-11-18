@@ -26,7 +26,8 @@ func runScan(cmd *cobra.Command, args []string) error {
 	path := args[0]
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return fmt.Errorf("%s: %s", red("Error"), err)
+		fmt.Fprintf(os.Stderr, "%s: %s\n", red("Error"), err)
+		os.Exit(1)
 	}
 
 	s := scanner.New(path, days, verbose, includeHidden)
@@ -44,7 +45,13 @@ func runScan(cmd *cobra.Command, args []string) error {
 	}
 
 	if err != nil {
-		return fmt.Errorf("%s: %w", red("Scan failed"), err)
+		fmt.Fprintf(os.Stderr, "%s: %s\n", red("Scan failed"), err)
+		os.Exit(1)
+	}
+
+	if results.TotalCount == 0 {
+		fmt.Println(yellow("No node_modules folders found"))
+		os.Exit(2)
 	}
 
 	ui.PrintResults(results, false)
