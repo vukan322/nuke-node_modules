@@ -1,5 +1,7 @@
 # Nuke node_modules
 
+[![Release](https://img.shields.io/github/v/release/vukan322/nuke-node_modules)](https://github.com/vukan322/nuke-node_modules/releases)
+![Downloads](https://img.shields.io/github/downloads/vukan322/nuke-node_modules/total)
 [![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](https://opensource.org/licenses/MIT)
 [![Go Version](https://img.shields.io/badge/Go-1.23+-00ADD8?logo=go)](https://go.dev/)
 
