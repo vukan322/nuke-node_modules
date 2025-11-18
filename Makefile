@@ -3,7 +3,7 @@ VERSION?=dev
 INSTALL_PATH=/usr/local/bin
 MAN_PATH=/usr/local/share/man/man1
 
-.PHONY: all build man install clean release
+.PHONY: all build test man install clean release
 
 all: build
 
@@ -32,7 +32,11 @@ clean:
 	@rm -f $(BINARY_NAME)
 	@rm -rf docs/
 
-release:
+test:
+	@echo "Running tests..."
+	@go test ./... -v
+
+release: test
 	@mkdir -p dist
 	GOOS=linux GOARCH=amd64 go build -ldflags="-X 'github.com/vukan322/nuke-node_modules/cmd.version=$(VERSION)'" -o dist/$(BINARY_NAME)-linux-amd64
 	GOOS=darwin GOARCH=amd64 go build -ldflags="-X 'github.com/vukan322/nuke-node_modules/cmd.version=$(VERSION)'" -o dist/$(BINARY_NAME)-darwin-amd64
