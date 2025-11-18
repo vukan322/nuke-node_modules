@@ -43,13 +43,14 @@ func runScan(cmd *cobra.Command, args []string) error {
 
 	sp := spinner.New(spinner.CharSets[36], 100*time.Millisecond)
 	sp.Suffix = " Scanning for node_modules..."
-	if !verbose {
+
+	if !verbose && !quiet {
 		sp.Start()
 	}
 
 	results, err := s.Scan()
 
-	if !verbose {
+	if !verbose && !quiet {
 		sp.Stop()
 	}
 
@@ -59,10 +60,13 @@ func runScan(cmd *cobra.Command, args []string) error {
 	}
 
 	if results.TotalCount == 0 {
-		fmt.Println(yellow("No node_modules folders found"))
+		if !quiet {
+			fmt.Println(yellow("No node_modules folders found"))
+		}
 		os.Exit(2)
 	}
 
-	ui.PrintResults(results, false)
+	ui.PrintResults(results, false, quiet)
+
 	return nil
 }

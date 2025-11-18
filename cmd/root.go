@@ -9,6 +9,7 @@ var (
 	verbose       bool
 	days          int
 	includeHidden bool
+	quiet         bool
 	version       = "dev"
 
 	red    = color.New(color.FgRed).SprintFunc()
@@ -38,4 +39,5 @@ func init() {
 	rootCmd.PersistentFlags().BoolVarP(&verbose, "verbose", "v", false, "Show detailed output during scan")
 	rootCmd.PersistentFlags().IntVar(&days, "days", 14, "Only process node_modules not modified in N days")
 	rootCmd.PersistentFlags().BoolVar(&includeHidden, "include-hidden", false, "Include hidden directories (starting with .)")
+	rootCmd.PersistentFlags().BoolVarP(&quiet, "quiet", "q", false, "Minimal output (summary only)")
 }

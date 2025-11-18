@@ -15,9 +15,16 @@ var (
 	cyan   = color.New(color.FgCyan).SprintFunc()
 )
 
-func PrintResults(result *scanner.ScanResult, isDeleted bool) {
+func PrintResults(result *scanner.ScanResult, isDeleted bool, quiet bool) {
 	if result.TotalCount == 0 {
-		fmt.Println(yellow("No node_modules folders found"))
+		if !quiet {
+			fmt.Println(yellow("No node_modules folders found"))
+		}
+		return
+	}
+
+	if quiet {
+		fmt.Printf("%d folders, %s\n", result.TotalCount, util.FormatSize(result.TotalSize))
 		return
 	}
 

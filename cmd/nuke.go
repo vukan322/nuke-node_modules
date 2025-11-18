@@ -49,13 +49,14 @@ func runNuke(cmd *cobra.Command, args []string) error {
 
 	sp := spinner.New(spinner.CharSets[36], 100*time.Millisecond)
 	sp.Suffix = " Scanning for node_modules..."
-	if !verbose {
+
+	if !verbose && !quiet {
 		sp.Start()
 	}
 
 	results, err := s.Scan()
 
-	if !verbose {
+	if !verbose && !quiet {
 		sp.Stop()
 	}
 
@@ -65,44 +66,52 @@ func runNuke(cmd *cobra.Command, args []string) error {
 	}
 
 	if len(results.Folders) == 0 {
-		fmt.Println(yellow("No node_modules folders found matching criteria"))
+		if !quiet {
+			fmt.Println(yellow("No node_modules folders found matching criteria"))
+		}
 		os.Exit(2)
 	}
 
-	ui.PrintResults(results, false)
+	ui.PrintResults(results, false, quiet)
 
 	if !yesFlag {
 		if !confirmDeletion() {
-			fmt.Println(yellow("Operation cancelled"))
+			if !quiet {
+				fmt.Println(yellow("Operation cancelled"))
+			}
 			return nil
 		}
 	}
 
 	sp = spinner.New(spinner.CharSets[36], 100*time.Millisecond)
 	sp.Suffix = " Deleting..."
-	if !verbose {
+
+	if !verbose && !quiet {
 		sp.Start()
 	}
 
 	deleted, err := s.Delete(results)
 
-	if !verbose {
+	if !verbose && !quiet {
 		sp.Stop()
 	}
 
 	if err != nil {
 		if deleted.TotalCount > 0 {
-			fmt.Printf("\n%s %d node_modules folder(s)\n", green("Deleted"), deleted.TotalCount)
-			fmt.Printf("Total space: %s\n", green(util.FormatSize(deleted.TotalSize)))
+			if !quiet {
+				fmt.Printf("\n%s %d node_modules folder(s)\n", green("Deleted"), deleted.TotalCount)
+				fmt.Printf("Total space: %s\n", green(util.FormatSize(deleted.TotalSize)))
+			}
 		}
 		fmt.Fprintf(os.Stderr, "\n%s %s\n", red("Error:"), err)
-		if deleted.TotalCount > 0 {
+		if deleted.TotalCount > 0 && !quiet {
 			fmt.Fprintf(os.Stderr, "%s\n", yellow("Partial success: some folders were deleted successfully."))
 		}
 		os.Exit(1)
 	}
 
-	ui.PrintResults(deleted, true)
+	ui.PrintResults(deleted, true, quiet)
+
 	return nil
 }
 
@@ -113,6 +122,7 @@ func confirmDeletion() bool {
 	if err != nil {
 		return false
 	}
+
 	response = strings.ToLower(strings.TrimSpace(response))
 	return response == "y" || response == "yes"
 }
