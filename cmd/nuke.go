@@ -8,17 +8,13 @@ import (
 	"time"
 
 	"github.com/briandowns/spinner"
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/vukan322/nuke-node_modules/internal/scanner"
 	"github.com/vukan322/nuke-node_modules/internal/ui"
+	"github.com/vukan322/nuke-node_modules/internal/util"
 )
 
-var (
-	yesFlag = false
-	redNuke = color.New(color.FgRed).SprintFunc()
-	yellow  = color.New(color.FgYellow).SprintFunc()
-)
+var yesFlag = false
 
 var nukeCmd = &cobra.Command{
 	Use:   "nuke <path>",
@@ -36,7 +32,7 @@ func runNuke(cmd *cobra.Command, args []string) error {
 	path := args[0]
 
 	if _, err := os.Stat(path); os.IsNotExist(err) {
-		return fmt.Errorf("%s: %s", redNuke("Error"), err)
+		return fmt.Errorf("%s: %s", red("Error"), err)
 	}
 
 	s := scanner.New(path, days, verbose, includeHidden)
@@ -54,7 +50,7 @@ func runNuke(cmd *cobra.Command, args []string) error {
 	}
 
 	if err != nil {
-		return fmt.Errorf("%s: %w", redNuke("Scan failed"), err)
+		return fmt.Errorf("%s: %w", red("Scan failed"), err)
 	}
 
 	if len(results.Folders) == 0 {
@@ -84,7 +80,15 @@ func runNuke(cmd *cobra.Command, args []string) error {
 	}
 
 	if err != nil {
-		return fmt.Errorf("%s: %w", redNuke("Deletion failed"), err)
+		if deleted.TotalCount > 0 {
+			fmt.Printf("\n%s %d node_modules folder(s)\n", green("Deleted"), deleted.TotalCount)
+			fmt.Printf("Total space: %s\n", green(util.FormatSize(deleted.TotalSize)))
+		}
+		fmt.Fprintf(os.Stderr, "\n%s %s\n", red("Error:"), err)
+		if deleted.TotalCount > 0 {
+			fmt.Fprintf(os.Stderr, "%s\n", yellow("Partial success: some folders were deleted successfully."))
+		}
+		os.Exit(1)
 	}
 
 	ui.PrintResults(deleted, true)

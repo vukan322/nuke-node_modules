@@ -5,6 +5,7 @@ import (
 	"io/fs"
 	"os"
 	"path/filepath"
+	"strings"
 	"time"
 
 	"github.com/vukan322/nuke-node_modules/internal/util"
@@ -125,10 +126,15 @@ func (s *Scanner) Delete(result *ScanResult) (*ScanResult, error) {
 		Folders: make([]FolderInfo, 0),
 	}
 
+	var failures []string
+
 	for _, folder := range result.Folders {
 		err := os.RemoveAll(folder.Path)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "Failed to delete %s: %v\n", folder.Path, err)
+			failures = append(failures, fmt.Sprintf("%s: %v", folder.Path, err))
+			if s.verbose {
+				fmt.Fprintf(os.Stderr, "Failed to delete %s: %v\n", folder.Path, err)
+			}
 			continue
 		}
 
@@ -139,6 +145,10 @@ func (s *Scanner) Delete(result *ScanResult) (*ScanResult, error) {
 		if s.verbose {
 			fmt.Printf("Deleted: %s (%s)\n", folder.Path, util.FormatSize(folder.Size))
 		}
+	}
+
+	if len(failures) > 0 {
+		return deleted, fmt.Errorf("failed to delete %d folder(s):\n%s", len(failures), strings.Join(failures, "\n"))
 	}
 
 	return deleted, nil

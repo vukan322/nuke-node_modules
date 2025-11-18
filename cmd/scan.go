@@ -6,13 +6,10 @@ import (
 	"time"
 
 	"github.com/briandowns/spinner"
-	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 	"github.com/vukan322/nuke-node_modules/internal/scanner"
 	"github.com/vukan322/nuke-node_modules/internal/ui"
 )
-
-var red = color.New(color.FgRed).SprintFunc()
 
 var scanCmd = &cobra.Command{
 	Use:   "scan <path>",

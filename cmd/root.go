@@ -1,6 +1,7 @@
 package cmd
 
 import (
+	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
 
@@ -9,6 +10,10 @@ var (
 	days          int
 	includeHidden bool
 	version       = "dev"
+
+	red    = color.New(color.FgRed).SprintFunc()
+	yellow = color.New(color.FgYellow).SprintFunc()
+	green  = color.New(color.FgGreen).SprintFunc()
 )
 
 var rootCmd = &cobra.Command{
