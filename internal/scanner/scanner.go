@@ -8,7 +8,13 @@ import (
 	"strings"
 	"time"
 
+	"github.com/fatih/color"
 	"github.com/vukan322/nuke-node_modules/internal/util"
+)
+
+var (
+	yellow = color.New(color.FgYellow).SprintFunc()
+	red    = color.New(color.FgRed).SprintFunc()
 )
 
 type Scanner struct {
@@ -45,7 +51,7 @@ func (s *Scanner) Scan() (*ScanResult, error) {
 	err = filepath.WalkDir(s.rootPath, func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			if s.verbose {
-				fmt.Fprintf(os.Stderr, "Warning: cannot access %s: %v\n", path, err)
+				fmt.Fprintf(os.Stderr, "%s %s: %v\n", yellow("Warning:"), path, err)
 			}
 			return nil
 		}
@@ -56,7 +62,7 @@ func (s *Scanner) Scan() (*ScanResult, error) {
 
 		if d.Type()&os.ModeSymlink != 0 {
 			if s.verbose {
-				fmt.Fprintf(os.Stderr, "Skipping symlink: %s\n", path)
+				fmt.Fprintf(os.Stderr, "%s %s\n", yellow("Skipping symlink:"), path)
 			}
 			return fs.SkipDir
 		}
@@ -71,21 +77,21 @@ func (s *Scanner) Scan() (*ScanResult, error) {
 		info, err := d.Info()
 		if err != nil {
 			if s.verbose {
-				fmt.Fprintf(os.Stderr, "Warning: cannot get info for %s: %v\n", path, err)
+				fmt.Fprintf(os.Stderr, "%s cannot get info for %s: %v\n", yellow("Warning:"), path, err)
 			}
 			return nil
 		}
 
 		if getDevice(info) != s.rootDev {
 			if s.verbose {
-				fmt.Fprintf(os.Stderr, "Skipping different filesystem: %s\n", path)
+				fmt.Fprintf(os.Stderr, "%s %s\n", yellow("Skipping different filesystem:"), path)
 			}
 			return fs.SkipDir
 		}
 
 		if d.Name() == "node_modules" {
 			if info.ModTime().Before(s.cutoffTime) {
-				size := calculateSize(path)
+				size := util.CalculateSize(path)
 				folder := FolderInfo{
 					Path:         path,
 					Size:         size,
@@ -133,7 +139,7 @@ func (s *Scanner) Delete(result *ScanResult) (*ScanResult, error) {
 		if err != nil {
 			failures = append(failures, fmt.Sprintf("%s: %v", folder.Path, err))
 			if s.verbose {
-				fmt.Fprintf(os.Stderr, "Failed to delete %s: %v\n", folder.Path, err)
+				fmt.Fprintf(os.Stderr, "%s %s: %v\n", red("Failed to delete"), folder.Path, err)
 			}
 			continue
 		}
@@ -152,21 +158,4 @@ func (s *Scanner) Delete(result *ScanResult) (*ScanResult, error) {
 	}
 
 	return deleted, nil
-}
-
-func calculateSize(path string) int64 {
-	var size int64
-	_ = filepath.WalkDir(path, func(_ string, d fs.DirEntry, err error) error {
-		if err != nil {
-			return nil
-		}
-		if !d.IsDir() {
-			info, err := d.Info()
-			if err == nil {
-				size += info.Size()
-			}
-		}
-		return nil
-	})
-	return size
 }

@@ -161,18 +161,30 @@ func TestScan_MultipleNodeModules(t *testing.T) {
 	project1 := filepath.Join(tmpDir, "project1")
 	project2 := filepath.Join(tmpDir, "project2")
 
-	os.Mkdir(project1, 0755)
-	os.Mkdir(project2, 0755)
+	if err := os.Mkdir(project1, 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Mkdir(project2, 0755); err != nil {
+		t.Fatal(err)
+	}
 
 	nm1 := filepath.Join(project1, "node_modules")
 	nm2 := filepath.Join(project2, "node_modules")
 
-	os.Mkdir(nm1, 0755)
-	os.Mkdir(nm2, 0755)
+	if err := os.Mkdir(nm1, 0755); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Mkdir(nm2, 0755); err != nil {
+		t.Fatal(err)
+	}
 
 	oldTime := time.Now().AddDate(0, 0, -30)
-	os.Chtimes(nm1, oldTime, oldTime)
-	os.Chtimes(nm2, oldTime, oldTime)
+	if err := os.Chtimes(nm1, oldTime, oldTime); err != nil {
+		t.Fatal(err)
+	}
+	if err := os.Chtimes(nm2, oldTime, oldTime); err != nil {
+		t.Fatal(err)
+	}
 
 	s := New(tmpDir, 14, false, false)
 	result, err := s.Scan()
@@ -200,7 +212,9 @@ func TestDelete_RemovesNodeModules(t *testing.T) {
 	}
 
 	oldTime := time.Now().AddDate(0, 0, -30)
-	os.Chtimes(nmPath, oldTime, oldTime)
+	if err := os.Chtimes(nmPath, oldTime, oldTime); err != nil {
+		t.Fatal(err)
+	}
 
 	s := New(tmpDir, 0, false, false)
 	scanResult, _ := s.Scan()

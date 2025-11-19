@@ -1,6 +1,9 @@
 package cmd
 
 import (
+	"fmt"
+	"os"
+
 	"github.com/fatih/color"
 	"github.com/spf13/cobra"
 )
@@ -40,4 +43,10 @@ func init() {
 	rootCmd.PersistentFlags().IntVar(&days, "days", 14, "Only process node_modules not modified in N days")
 	rootCmd.PersistentFlags().BoolVar(&includeHidden, "include-hidden", false, "Include hidden directories (starting with .)")
 	rootCmd.PersistentFlags().BoolVarP(&quiet, "quiet", "q", false, "Minimal output (summary only)")
+
+	rootCmd.SetFlagErrorFunc(func(cmd *cobra.Command, err error) error {
+		fmt.Fprintf(os.Stderr, "%s %s\n", red("Error:"), err)
+		_ = cmd.Usage()
+		return nil
+	})
 }
