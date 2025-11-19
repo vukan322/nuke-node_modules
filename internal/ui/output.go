@@ -24,7 +24,11 @@ func PrintResults(result *scanner.ScanResult, isDeleted bool, quiet bool) {
 	}
 
 	if quiet {
-		fmt.Printf("%d folders, %s\n", result.TotalCount, util.FormatSize(result.TotalSize))
+		colorFunc := cyan
+		if isDeleted {
+			colorFunc = green
+		}
+		fmt.Printf("%s\n", colorFunc(fmt.Sprintf("%d folders, %s", result.TotalCount, util.FormatSize(result.TotalSize))))
 		return
 	}
 
